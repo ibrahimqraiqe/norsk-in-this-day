@@ -14,6 +14,7 @@ $dir = plugin_dir_path(__FILE__);
 $plugin_url = plugin_dir_url(__FILE__);
 
 define("IBO_DAGEN_IDAG", "IboDagenIdag/Ibo-dagen-idag.php");
+define("NRK_DAGEN_IDAG_URL", "http://m.nrk.no/dagenidag/");
 
 include_once ($dir.'inc/functions.php');
 include_once ($dir.'inc/admin_general.php');
