@@ -1,67 +1,100 @@
 <?php
 
+$dagen_idag_object = getDagenIdagObject();
+
 class IBODAGENIDAG_AdminGeneral{
+    public $options;
 
-    public function get_string_between($string, $start, $end){
-        $string = ' ' . $string;
-        $ini = strpos($string, $start);
-        if ($ini == 0) return '';
-        $ini += strlen($start);
-        $len = strpos($string, $end, $ini) - $ini;
-        return substr($string, $ini, $len);
+    function __construct(){
+        $this->options = array();
+
+        $options = get_option( 'ibrahim_plugins_ibo_dagen_idag_page' );
+        if(isset($options[ 'header_id'] ))
+            $this->options['header'] = $options[ 'header_id'];
+        else
+            $this->options['header'] = array('color'=>'#fff','font'=>'arial');
+
+        if(isset($options[ 'sitatet_id'] ))
+            $this->options['sitatet'] = $options[ 'sitatet_id'];
+        else
+            $this->options['sitatet'] = '';
+
+        if(isset($options[ 'navnedag_id'] ))
+            $this->options['navnedag'] = $options[ 'navnedag_id'];
+        else
+            $this->options['navnedag'] = '0px';
+
+        if(isset($options[ 'date_id'] ))
+            $this->options['date'] = $options[ 'date_id'];
+        else
+            $this->options['date'] = '';
+
+        if(isset($options[ 'events_id'] ))
+            $this->options['events'] = $options[ 'events_id'];
+        else
+            $this->options['events'] = '';
+
+
     }
 
-
-    public function getDagenIdagArray($dagen_idag_html_splitted){
-        $nrk_dagen_idag_array = array();
-        foreach($dagen_idag_html_splitted as $line){
-            $key = $this->get_string_between($line,'<b>','</b>');
-            $value = str_replace("<b>".$key."</b>", "", $line);
-            if(strlen($key)>0){
-                $nrk_dagen_idag_array[$key] = $value;
-                //echo '<h3>'.print_r($key,true).'</h3>';
-            }
-        }
-        return $nrk_dagen_idag_array;
-    }
     public function drawAdminPage(){
+        global $dagen_idag_object;
+        register_setting(
+            'ibrahim_plugins_ibo_dagen_idag_group', // group
+            'ibrahim_plugins_ibo_dagen_idag_page', // name
+            array( $this, 'sanitise' ) // sanitise method
+        );
 
+        add_settings_section(
+            'ibrahim_plugins_ibo_dagen_idag_section',
+            plugin_get_version(IBO_DAGEN_IDAG),
+            '',
+            'ibrahim_plugins_ibo_dagen_idag_page'
+        );
 
-        echo '<h3>'.plugin_get_version(IBO_DAGEN_IDAG).'</h3>';
-        $dagen_idag_url = file_get_contents(NRK_DAGEN_IDAG_URL);
-
-        $dom = new DOMDocument();
-
-        libxml_use_internal_errors(true);
-        $dom->loadHTML($dagen_idag_url);
-        libxml_use_internal_errors(false);
-
-        $xpath = new DOMXPath($dom);
-        $div = $xpath->query('//div[@class="content"]');
-        $div = $div->item(0);
-        $dagen_idag_html = $dom->saveXML($div);
-        $dagen_idag_html_splitted = preg_split('/<br[^>]*>/i', $dagen_idag_html,-1,PREG_SPLIT_NO_EMPTY);
-
-
-        $header = (count($dagen_idag_html_splitted)>0)?$dagen_idag_html_splitted[0]:NULL;
-        $navnedag =  (count($dagen_idag_html_splitted)>2)?$dagen_idag_html_splitted[2]:NULL;
-
-        $lastObj = end($dagen_idag_html_splitted);
-        $secondLastObj = $dagen_idag_html_splitted[count($dagen_idag_html_splitted)-2];
-        $sitatet = strlen($lastObj)>6?$lastObj:$secondLastObj;
-
-        echo '<h3>'.$header.'</h3>';
-        echo '<h2>Navnedag: '.$navnedag.'</h2>';
-        $nrk_dagen_idag_array = $this->getDagenIdagArray($dagen_idag_html_splitted);
-
-        echo '<h2>'.$dagen_idag_html_splitted[3].'</h2>';
-        echo '<ul>';
-        foreach($nrk_dagen_idag_array as $year => $value){
-            if(strlen($value)>0 && !is_numeric($year))echo '<li>'.$year.' => '.$value.'</li>';
+        foreach ($dagen_idag_object as $key => $field){
+            add_settings_field(
+                $key.'_id', // id
+                $key, // title
+                array( $this, $key.'_html' ), // callback
+                'ibrahim_plugins_ibo_dagen_idag_page', // page
+                'ibrahim_plugins_ibo_dagen_idag_section' // section
+            );
         }
-        echo '</ul>';
-        echo '<h3>Sitatet: '.$sitatet.'</h3>';
+    }
 
+    public function header_html(){
+        global $dagen_idag_object;
+        $header_options = $this->options['header'];
+        $color = $header_options['color'];
+        $font = $header_options['font'];
+
+        printf(
+            '<input type="text" id="dagen_idag_header_color" name="ibrahim_plugins_ibo_dagen_idag_page[header_id][color]" style="width: 250px;" class="cpa-color-picker" value="%s" />',
+            $color);
+        printf(
+            '<input type="text" id="dagen_idag_header_font" name="ibrahim_plugins_ibo_dagen_idag_page[header_id][font]" style="width: 250px;" value="%s" />',
+            $font);
+        echo '<div>'.$dagen_idag_object->header.'</div>';
+    }
+    public function sitatet_html(){
+        global $dagen_idag_object;
+        echo $dagen_idag_object->sitatet;
+    }
+    public function navnedag_html(){
+        global $dagen_idag_object;
+
+        echo $dagen_idag_object->navnedag;
+    }
+    public function date_html(){
+        global $dagen_idag_object;
+
+        echo $dagen_idag_object->date;
+    }
+    public function events_html(){
+        global $dagen_idag_object;
+
+        echo print_r($dagen_idag_object->events,true);
     }
 
 }

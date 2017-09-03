@@ -28,8 +28,22 @@ class MainClass{
     public function __construct(){
         add_action( 'admin_menu', array( $this, 'add_ibrahim_plugins_menu' ) );
         add_action( 'admin_menu', array( $this, 'add_dagen_idag_submenu' ) );
+        add_action( 'admin_init', array( $this, 'init_settings_page' ) );
+
+        add_action( 'admin_enqueue_scripts', array( $this, 'init_scripts_admin' ) );
+
     }
 
+    public function init_scripts_admin( ) {
+        wp_enqueue_style( 'wp-color-picker' );
+        wp_register_script('gazaway-dagenidag-script-handle', plugins_url( '/assets/js/main.js', __FILE__ ),array( 'wp-color-picker' ), false, true );
+
+    }
+
+    public function init_settings_page(){
+        $admin_general = new IBODAGENIDAG_AdminGeneral();
+        $admin_general->drawAdminPage();
+    }
     public function add_ibrahim_plugins_menu() {
         if ( empty ( $GLOBALS['admin_page_hooks']['ibrahim_plugins'] ) ){
             add_menu_page(
@@ -45,7 +59,6 @@ class MainClass{
     }
 
     public function add_dagen_idag_submenu() {
-        $admin_general = new IBODAGENIDAG_AdminGeneral();
 
         add_submenu_page(
             'gazaway_options',
@@ -53,7 +66,8 @@ class MainClass{
             'Dagen idag',
             'manage_options',
             'ibrahim_plugins_ibo_dagen_idag',
-            array( $admin_general, 'drawAdminPage' ) );
+            array( $this, 'createTheForm' ) );
+
     }
 
     public function renderIbrahimPage(){
@@ -64,7 +78,17 @@ class MainClass{
         <?php
     }
 
+    public function createTheForm(){
+        print '<form method="post" action="options.php">';
+        settings_fields( 'ibrahim_plugins_ibo_dagen_idag_group' );
+        do_settings_sections( 'ibrahim_plugins_ibo_dagen_idag_page' );
+
+        submit_button();
+
+        // close page wrapper
+        print '</form></div>';
+    }
+
 }
 
-if ( is_admin() )
-    $mainClass = new MainClass();
+$mainClass = new MainClass();
