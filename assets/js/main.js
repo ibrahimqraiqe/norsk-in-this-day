@@ -7,6 +7,5 @@ $j(document).ready(function() {
     $j(function() {
         $j('.color-field').wpColorPicker();
     });
-
 });
 

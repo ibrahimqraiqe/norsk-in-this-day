@@ -17,17 +17,17 @@ class IBODAGENIDAG_AdminGeneral{
         if(isset($options[ 'sitatet_id'] ))
             $this->options['sitatet'] = $options[ 'sitatet_id'];
         else
-            $this->options['sitatet'] = '';
+            $this->options['sitatet'] = array('color'=>'#fff','font'=>'arial');
 
         if(isset($options[ 'navnedag_id'] ))
             $this->options['navnedag'] = $options[ 'navnedag_id'];
         else
-            $this->options['navnedag'] = '0px';
+            $this->options['navnedag'] = array('color'=>'#fff','font'=>'arial');
 
         if(isset($options[ 'date_id'] ))
             $this->options['date'] = $options[ 'date_id'];
         else
-            $this->options['date'] = '';
+            $this->options['date'] = array('color'=>'#fff','font'=>'arial');
 
         if(isset($options[ 'events_id'] ))
             $this->options['events'] = $options[ 'events_id'];
@@ -63,32 +63,53 @@ class IBODAGENIDAG_AdminGeneral{
         }
     }
 
+    public function my_field_primary_font($name,$current_font) {
+        $fonts = get_dagenidag_available_fonts();
+        ?>
+        <select name="<?php echo $name; ?>">
+            <?php foreach( $fonts as $font_key => $font ): ?>
+                <option <?php selected( $font_key == $current_font ); ?> value="<?php echo $font_key; ?>"><?php echo $font['name']; ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+    }
+
+    public function printHtmlFieldFor($field){
+        printf(
+            '<input type="text" id="dagen_idag_header_color" name="ibrahim_plugins_ibo_dagen_idag_page[%s_id][color]" style="width: 250px;" class="color-field" value="%s" />',
+            $field,$this->options[$field]['color']);
+        echo '<br />';
+        $this->my_field_primary_font('ibrahim_plugins_ibo_dagen_idag_page[%s_id][font]',$this->options[$field]['font']);
+        echo '<br />';
+        /*
+        printf(
+            '<input type="text" id="dagen_idag_header_font" name="ibrahim_plugins_ibo_dagen_idag_page[%s_id][font]" style="width: 250px;" value="%s" />',
+            $field,$this->options[$field]['font']);
+        */
+    }
+
+
+
     public function header_html(){
         global $dagen_idag_object;
-        $header_options = $this->options['header'];
-        $color = $header_options['color'];
-        $font = $header_options['font'];
-
-        printf(
-            '<input type="text" id="dagen_idag_header_color" name="ibrahim_plugins_ibo_dagen_idag_page[header_id][color]" style="width: 250px;" class="cpa-color-picker" value="%s" />',
-            $color);
-        printf(
-            '<input type="text" id="dagen_idag_header_font" name="ibrahim_plugins_ibo_dagen_idag_page[header_id][font]" style="width: 250px;" value="%s" />',
-            $font);
+        $this->printHtmlFieldFor('header');
         echo '<div>'.$dagen_idag_object->header.'</div>';
     }
     public function sitatet_html(){
         global $dagen_idag_object;
+        $this->printHtmlFieldFor('sitatet');
+        echo '<div>'.$dagen_idag_object->header.'</div>';
+
         echo $dagen_idag_object->sitatet;
     }
     public function navnedag_html(){
         global $dagen_idag_object;
-
+        $this->printHtmlFieldFor('navnedag');
         echo $dagen_idag_object->navnedag;
     }
     public function date_html(){
         global $dagen_idag_object;
-
+        $this->printHtmlFieldFor('date');
         echo $dagen_idag_object->date;
     }
     public function events_html(){

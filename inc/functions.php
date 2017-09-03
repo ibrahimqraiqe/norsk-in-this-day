@@ -97,3 +97,84 @@ if(!function_exists('getDagenIdagObject')){
         return $DagenIdagObject;
     }
 }
+
+if(!function_exists('get_dagenidag_available_fonts')){
+    function get_dagenidag_available_fonts() {
+        $fonts = array(
+
+            'arial' => array(
+
+                'name' => 'Arial',
+
+                'font' => '',
+
+                'css' => "font-family: Arial, sans-serif;"
+
+            ),
+
+            'Port Lligat Slab' => array(
+
+                'name' => 'Port Lligat Slab',
+
+                'font' => ' @import url(http://fonts.googleapis.com/css?family=Port+Lligat+Slab);',
+
+                'css' => " font-family: 'Port Lligat Slab', serif;"
+
+            ),
+
+            'Roboto' => array(
+
+                'name' => 'Roboto',
+
+                'font' => '@import url(http://fonts.googleapis.com/css?family=Roboto);',
+
+                'css' => "font-family: 'Roboto', sans-serif;"
+
+            ),
+
+            'Happy Monkey' => array(
+
+                'name' => 'Happy Monkey ',
+
+                'font' => '@import url(http://fonts.googleapis.com/css?family=Happy+Monkey);',
+
+                'css' => "font-family: 'Happy Monkey', cursive;"
+
+            ),
+
+            'Crushed' => array(
+
+                'name' => 'Crushed',
+
+                'font' => '@import url(http://fonts.googleapis.com/css?family=Crushed);',
+
+                'css' => " font-family: 'Crushed', cursive;"
+
+            ),
+
+            'New Rocker ' => array(
+
+                'name' => 'New Rocker ',
+
+                'font' => '@import url(http://fonts.googleapis.com/css?family=New+Rocker);',
+
+                'css' => "font-family: 'New Rocker', cursive;"
+
+            ),
+
+            'Rosario' => array(
+
+                'name' => 'Rosario',
+
+                'font' => '@import url(http://fonts.googleapis.com/css?family=Rosario);',
+
+                'css' => "font-family: 'Rosario', sans-serif;"
+
+            )
+
+        );
+
+
+        return apply_filters( 'get_dagenidag_available_fonts', $fonts );
+    }
+}

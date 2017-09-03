@@ -18,6 +18,7 @@ define("NRK_DAGEN_IDAG_URL", "http://m.nrk.no/dagenidag/");
 
 include_once ($dir.'inc/functions.php');
 include_once ($dir.'inc/admin_general.php');
+include_once ($dir.'inc/google-fonts.php');
 
 if( !defined( 'ABSPATH' ) ) {
     exit;
@@ -26,18 +27,22 @@ if( !defined( 'ABSPATH' ) ) {
 
 class MainClass{
     public function __construct(){
+        add_action( 'admin_enqueue_scripts', array( $this, 'init_scripts_admin' ) );
+
         add_action( 'admin_menu', array( $this, 'add_ibrahim_plugins_menu' ) );
         add_action( 'admin_menu', array( $this, 'add_dagen_idag_submenu' ) );
         add_action( 'admin_init', array( $this, 'init_settings_page' ) );
+        add_filter( 'my_available_fonts', 'my_new_fonts' );
 
-        add_action( 'admin_enqueue_scripts', array( $this, 'init_scripts_admin' ) );
 
     }
 
     public function init_scripts_admin( ) {
-        wp_enqueue_style( 'wp-color-picker' );
-        wp_register_script('gazaway-dagenidag-script-handle', plugins_url( '/assets/js/main.js', __FILE__ ),array( 'wp-color-picker' ), false, true );
+        wp_enqueue_media();
+        wp_enqueue_style( 'wp-color-picker');
+        wp_enqueue_script( 'wp-color-picker');
 
+        wp_enqueue_script( 'gazaway-dagenidag-script-handle', plugins_url( '/assets/js/main.js', __FILE__ ), array( 'jquery', 'wp-color-picker' ), '', true  );
     }
 
     public function init_settings_page(){
